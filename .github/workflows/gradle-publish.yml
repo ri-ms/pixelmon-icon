@@ -1,4 +1,4 @@
-name: Publish Library
+name: .Gradle
 
 on:
   release:
