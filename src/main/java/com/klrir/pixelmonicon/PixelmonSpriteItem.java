@@ -1,4 +1,4 @@
-package com.klrir.pixelmon.icon;
+package com.klrir.pixelmonicon;
 
 import com.pixelmonmod.pixelmon.api.pokemon.Nature;
 import com.pixelmonmod.pixelmon.api.pokemon.Pokemon;

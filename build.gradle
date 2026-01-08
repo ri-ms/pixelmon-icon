@@ -5,7 +5,7 @@ plugins {
     id 'maven-publish'
 }
 
-group = "com.klrir"
+group = "com.klrir.pixelmonicon"
 version = "1.0.0"
 
 repositories {
