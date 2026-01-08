@@ -53,28 +53,42 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
-processResources {
-    def props = [version: version]
-    inputs.properties props
-    filteringCharset 'UTF-8'
-    filesMatching('paper-plugin.yml') {
-        expand props
-    }
-}
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
             artifactId = "pixelmon-icon"
             from components.java
+
+            pom {
+                name = "Pixelmon Icon Library"
+                description = "Utility library for building Pixelmon sprite items on Paper"
+                url = "https://github.com/klrir/pixelmon-icon"
+
+                licenses {
+                    license {
+                        name = "MIT License"
+                        url = "https://opensource.org/licenses/MIT"
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = "ri-ms"
+                        name = "ri-ms"
+                    }
+                }
+
+                scm {
+                    url = "https://github.com/klrir/pixelmon-icon"
+                }
+            }
         }
     }
 
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://github.com/ri-ms/pixelmon-icon")
-
+            url = uri("https://maven.pkg.github.com/klrir/pixelmon-icon")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
