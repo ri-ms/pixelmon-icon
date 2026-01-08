@@ -65,8 +65,8 @@ processResources {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            artifactId = "pixelmon-icon"
             from components.java
-
             pom {
                 name = "Pixelmon Icon Library"
                 description = "Utility library for building Pixelmon sprite items on Paper"
