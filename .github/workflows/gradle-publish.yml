@@ -1,8 +1,9 @@
-name: Publish Library
+name: .Gradle
 
 on:
+  workflow_dispatch: # Permite disparar manualmente
   release:
-    types: [created]
+    types: [created] # Também dispara em releases
 
 jobs:
   publish:
@@ -21,6 +22,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+          cache: gradle
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -28,7 +30,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Build Jar
+        run: ./gradlew build
+
       - name: Publish to GitHub Packages
         run: ./gradlew publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
