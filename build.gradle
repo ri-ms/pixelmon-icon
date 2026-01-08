@@ -73,7 +73,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/klrir/pixelmon-icon")
+            url = uri("https://github.com/ri-ms/pixelmon-icon")
 
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
