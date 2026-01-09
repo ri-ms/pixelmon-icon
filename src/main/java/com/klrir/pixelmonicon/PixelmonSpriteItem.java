@@ -121,9 +121,11 @@ public final class PixelmonSpriteItem {
     }
 
     private static Component buildLevelLine(int level, String... prefix) {
-        return deserialize("<green>Level:</green> <light_purple><prefix><level></light_purple>",
+        String prefx = Arrays.stream(prefix).findFirst().orElse("");
+        return deserialize("<green>Level<opt></green> <light_purple><prefix><level></light_purple>",
+                Placeholder.parsed("opt", prefx.isEmpty() ? ":" : ""),
                 Placeholder.parsed("level", String.valueOf(level)),
-                Placeholder.parsed("prefix", Arrays.stream(prefix).findFirst().orElse("")));
+                Placeholder.parsed("prefix", prefx));
     }
 
     private static List<Component> buildNatureLine(Nature... natures) {
@@ -134,7 +136,6 @@ public final class PixelmonSpriteItem {
             return lines;
         }
 
-        // Caso simples
         if (natures.length == 1) {
             Nature nature = natures[0];
             lines.add(deserialize(
@@ -146,7 +147,6 @@ public final class PixelmonSpriteItem {
         }
 
         int wrapAfter = 3;
-
         for (int i = 0; i < natures.length; i += wrapAfter) {
             int end = Math.min(i + wrapAfter, natures.length);
             Nature[] chunk = Arrays.copyOfRange(natures, i, end);
@@ -155,27 +155,33 @@ public final class PixelmonSpriteItem {
                     .map(Nature::name)
                     .collect(Collectors.joining(JOIN));
 
-            boolean first = i == 0;
-            boolean last = end == natures.length;
-
-            String format;
-            if (first && last) {
-                format = "<green>Nature:</green> <dark_gray>[<light_purple><nature></light_purple>]</dark_gray>";
-            } else if (first) {
-                format = "<green>Nature:</green> <dark_gray>[<light_purple><nature></light_purple>";
-            } else if (last) {
-                format = "<dark_gray><light_purple><nature></light_purple>]</dark_gray>";
-            } else {
-                format = "<gray>        </gray><dark_gray><light_purple><nature></light_purple>";
-            }
+            final String format = getFormatted(natures.length, i, end);
 
             lines.add(deserialize(
                     format,
+                    Placeholder.parsed("name", "Nature"),
                     Placeholder.parsed("nature", content)
             ));
         }
 
         return lines;
+    }
+
+    private static @NonNull String getFormatted(int length, int i, int end) {
+        boolean first = (i == 0);
+        boolean last = end == length;
+
+        String format;
+        if (first && last) {
+            format = "<green><name>:</green> <dark_gray>[<light_purple><nature></light_purple>]</dark_gray>";
+        } else if (first) {
+            format = "<green><name>:</green> <dark_gray>[<light_purple><nature></light_purple>";
+        } else if (last) {
+            format = "<dark_gray><light_purple><nature></light_purple>]</dark_gray>";
+        } else {
+            format = "<gray>        </gray><dark_gray><light_purple><nature></light_purple>";
+        }
+        return format;
     }
 
     private static Component buildNatureSuffix(Nature nature) {
@@ -237,23 +243,12 @@ public final class PixelmonSpriteItem {
                     .map(Ability::getName)
                     .collect(Collectors.joining(JOIN));
 
-            boolean first = i == 0;
-            boolean last = end == abilities.length;
-
-            String format;
-            if (first && last) {
-                format = "<green>Ability:</green> <dark_gray>[<light_purple><ability></light_purple>]</dark_gray>";
-            } else if (first) {
-                format = "<green>Ability:</green> <dark_gray>[<light_purple><ability></light_purple>";
-            } else if (last) {
-                format = "<dark_gray><light_purple><ability></light_purple>]</dark_gray>";
-            } else {
-                format = "<dark_gray><light_purple><ability></light_purple>";
-            }
+            final String format = getFormatted(abilities.length, i, end);
 
             lines.add(deserialize(
                     format,
-                    Placeholder.parsed("ability", content)
+                    Placeholder.parsed("name", "Ability"),
+                    Placeholder.parsed("nature", content)
             ));
         }
 
