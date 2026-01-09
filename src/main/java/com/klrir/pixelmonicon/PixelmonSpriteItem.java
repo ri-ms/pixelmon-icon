@@ -6,7 +6,9 @@ import com.pixelmonmod.pixelmon.api.pokemon.ability.Ability;
 import com.pixelmonmod.pixelmon.api.pokemon.item.pokeball.PokeBall;
 import com.pixelmonmod.pixelmon.api.pokemon.stats.BattleStatsType;
 import com.pixelmonmod.pixelmon.api.pokemon.stats.IVStore;
+import com.pixelmonmod.pixelmon.api.pokemon.stats.Moveset;
 import com.pixelmonmod.pixelmon.api.util.helpers.SpriteItemHelper;
+import com.pixelmonmod.pixelmon.battles.attacks.Attack;
 import io.papermc.paper.adventure.PaperAdventure;
 import lombok.Builder;
 import lombok.NonNull;
@@ -57,6 +59,7 @@ public final class PixelmonSpriteItem {
             boolean hasPokeball,
             boolean hasEV,
             boolean hasIV,
+            boolean hasMoveset,
             boolean isTrainer
     ) {
         ItemStack item = CraftItemStack.asBukkitCopy(SpriteItemHelper.getPhoto(pokemon));
@@ -64,7 +67,7 @@ public final class PixelmonSpriteItem {
 
         item.editMeta(meta -> {
             meta.displayName(buildDisplayName(pokemon, shiny, hasNickname));
-            meta.lore(buildLore(pokemon, hasLevel, hasNature, natures, hasGrowth, hasAbility, abilities, hasOT, hasPokeball, hasEV, hasIV, isTrainer));
+            meta.lore(buildLore(pokemon, hasLevel, hasNature, natures, hasGrowth, hasAbility, abilities, hasOT, hasPokeball, hasEV, hasIV, hasMoveset, isTrainer));
             if (shiny) meta.setEnchantmentGlintOverride(true);
         });
 
@@ -86,6 +89,7 @@ public final class PixelmonSpriteItem {
                                              boolean hasPokeball,
                                              boolean hasEV,
                                              boolean hasIV,
+                                             boolean hasMoveset,
                                              boolean isTrainer) {
 
         List<Component> lore = new ArrayList<>();
@@ -98,6 +102,15 @@ public final class PixelmonSpriteItem {
                 List.of(pokemon.getAbility()).toArray(Ability[]::new)));
         if (hasOT) lore.add(buildOTLine(pokemon.getOriginalTrainer()));
         if (hasPokeball) lore.add(buildPokeballLine(pokemon.getBall()));
+
+        if (hasMoveset) {
+            lore.add(Component.empty());
+            lore.addAll(buildMoveSetLine(pokemon.getMoveset().attacks));
+        }
+
+        if (hasEV || hasIV) {
+            lore.add(Component.empty());
+        }
 
         if (hasIV) {
             lore.add(buildStatSummaryLine(
@@ -160,7 +173,7 @@ public final class PixelmonSpriteItem {
             lines.add(deserialize(
                     format,
                     Placeholder.parsed("name", "Nature"),
-                    Placeholder.parsed("nature", content)
+                    Placeholder.parsed("value", content)
             ));
         }
 
@@ -173,13 +186,13 @@ public final class PixelmonSpriteItem {
 
         String format;
         if (first && last) {
-            format = "<green><name>:</green> <dark_gray>[<light_purple><nature></light_purple>]</dark_gray>";
+            format = "<green><name>:</green> <dark_gray>[<light_purple><value></light_purple>]</dark_gray>";
         } else if (first) {
-            format = "<green><name>:</green> <dark_gray>[<light_purple><nature></light_purple>";
+            format = "<green><name>:</green> <dark_gray>[<light_purple><value></light_purple>";
         } else if (last) {
-            format = "<dark_gray><light_purple><nature></light_purple>]</dark_gray>";
+            format = "<dark_gray><light_purple><value></light_purple>]</dark_gray>";
         } else {
-            format = "<gray>        </gray><dark_gray><light_purple><nature></light_purple>";
+            format = "<gray>        </gray><dark_gray><light_purple><value></light_purple>";
         }
         return format;
     }
@@ -248,7 +261,7 @@ public final class PixelmonSpriteItem {
             lines.add(deserialize(
                     format,
                     Placeholder.parsed("name", "Ability"),
-                    Placeholder.parsed("nature", content)
+                    Placeholder.parsed("value", content)
             ));
         }
 
@@ -263,6 +276,44 @@ public final class PixelmonSpriteItem {
     private static Component buildPokeballLine(PokeBall pokeBall) {
         return deserialize("<green>Pokeball:</green> <light_purple><pokeball></light_purple>",
                 Placeholder.parsed("pokeball", pokeBall.getName()));
+    }
+
+    private static List<Component> buildMoveSetLine(Attack... attacks) {
+        List<Component> lines = new ArrayList<>();
+        final String JOIN = "<dark_gray>,</dark_gray> ";
+
+        if (attacks == null || attacks.length == 0) {
+            return lines;
+        }
+
+        if (attacks.length == 1) {
+            Attack attack = attacks[0];
+            lines.add(deserialize(
+                    "<green>Moveset:</green> <light_purple><move></light_purple><suffix>",
+                    Placeholder.component("move", Component.translatable(attack.getMove().getTranslationKey()))
+            ));
+            return lines;
+        }
+
+        int wrapAfter = 3;
+        for (int i = 0; i < attacks.length; i += wrapAfter) {
+            int end = Math.min(i + wrapAfter, attacks.length);
+            Attack[] chunk = Arrays.copyOfRange(attacks, i, end);
+
+            String content = Arrays.stream(chunk)
+                    .map(attack -> attack.getMove().getTranslationKey())
+                    .collect(Collectors.joining(JOIN));
+
+            final String format = getFormatted(attacks.length, i, end);
+
+            lines.add(deserialize(
+                    format,
+                    Placeholder.parsed("name", "Moveset"),
+                    Placeholder.parsed("value", content)
+            ));
+        }
+
+        return lines;
     }
 
     private static Component buildStatSummaryLine(String label, int current, int max) {
