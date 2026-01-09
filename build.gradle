@@ -79,11 +79,12 @@ publishing {
                 }
 
                 scm {
-                    url = "https://github.com/ri-ms/pixelmon-icon"
+                    url = "https://github.com/klrir/pixelmon-icon"
                 }
             }
         }
     }
+
     repositories {
         maven {
             name = "GitHubPackages"
