@@ -54,26 +54,44 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = "pixelmon-icon"
+            from components.java
+
+            pom {
+                name = "Pixelmon Icon Library"
+                description = "Utility library for building Pixelmon sprite items on Paper"
+                url = "https://github.com/ri-ms/pixelmon-icon"
+
+                licenses {
+                    license {
+                        name = "MIT License"
+                        url = "https://opensource.org/licenses/MIT"
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = "ri-ms"
+                        name = "ri-ms"
+                    }
+                }
+
+                scm {
+                    url = "https://github.com/klrir/pixelmon-icon"
+                }
+            }
+        }
+    }
     repositories {
         maven {
             name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/ri-ms/pixelmon-icon"
+            url = uri("https://maven.pkg.github.com/ri-ms/pixelmon-icon")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
             }
         }
     }
-
-
-    publications {
-        maven(MavenPublication) {
-            from components.java
-        }
-    }
-}
-
-wrapper {
-    gradleVersion = "8.14"
-    distributionType = Wrapper.DistributionType.ALL
 }
