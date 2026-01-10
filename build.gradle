@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.klrir.pixelmonicon"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -79,7 +79,7 @@ publishing {
                 }
 
                 scm {
-                    url = "https://github.com/ri-ms/pixelmon-icon"
+                    url = "https://github.com/klrir/pixelmon-icon"
                 }
             }
         }
