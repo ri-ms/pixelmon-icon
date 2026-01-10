@@ -280,7 +280,7 @@ public final class PixelmonSpriteItem {
 
     private static List<Component> buildMoveSetLine(Attack... attacks) {
         List<Component> lines = new ArrayList<>();
-        final String JOIN = "<dark_gray>,</dark_gray> ";
+        final Component MOVE_SEPARATOR = Component.text(", ", NamedTextColor.DARK_GRAY);
 
         if (attacks == null || attacks.length == 0) {
             return lines;
@@ -300,16 +300,20 @@ public final class PixelmonSpriteItem {
             int end = Math.min(i + wrapAfter, attacks.length);
             Attack[] chunk = Arrays.copyOfRange(attacks, i, end);
 
-            String content = Arrays.stream(chunk)
-                    .map(attack -> attack.getMove().getTranslationKey())
-                    .collect(Collectors.joining(JOIN));
+            Component content = Arrays.stream(chunk)
+                    .filter(a -> a != null && a.getMove() != null)
+                    .map(a -> Component.translatable(a.getMove().getTranslationKey()))
+                    .reduce((a, b) -> a.append(MOVE_SEPARATOR).append(b))
+                    .orElse(null);
+
+            if (content == null) continue;
 
             final String format = getFormatted(attacks.length, i, end);
 
             lines.add(deserialize(
                     format,
                     Placeholder.parsed("name", "Moveset"),
-                    Placeholder.parsed("value", content)
+                    Placeholder.component("value", content)
             ));
         }
 
