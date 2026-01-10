@@ -55,33 +55,8 @@ tasks.withType(JavaCompile).configureEach {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifactId = "pixelmon-icon"
+        maven(MavenPublication) {
             from components.java
-
-            pom {
-                name = "Pixelmon Icon Library"
-                description = "Utility library for building Pixelmon sprite items on Paper"
-                url = "https://github.com/ri-ms/pixelmon-icon"
-
-                licenses {
-                    license {
-                        name = "MIT License"
-                        url = "https://opensource.org/licenses/MIT"
-                    }
-                }
-
-                developers {
-                    developer {
-                        id = "ri-ms"
-                        name = "ri-ms"
-                    }
-                }
-
-                scm {
-                    url = "https://github.com/ri-ms/pixelmon-icon"
-                }
-            }
         }
     }
 }
