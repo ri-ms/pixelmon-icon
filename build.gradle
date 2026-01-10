@@ -54,11 +54,6 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-        }
-    }
     repositories {
         maven {
             name = "GitHubPackages"
@@ -69,4 +64,16 @@ publishing {
             }
         }
     }
+
+
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+wrapper {
+    gradleVersion = "8.14"
+    distributionType = Wrapper.DistributionType.ALL
 }
