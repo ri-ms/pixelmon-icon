@@ -416,7 +416,7 @@ public final class PixelmonSpriteItem {
     private static Component joinWithSlash(List<Component> components) {
         Component line = Component.empty();
         for (int i = 0; i < components.size(); i++) {
-            if (i > 0) line = line.append(Component.text("/"));
+            if (i > 0) line = line.append(Component.text("/", NamedTextColor.DARK_GRAY));
             line = line.append(components.get(i));
         }
         return line;
