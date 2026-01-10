@@ -388,6 +388,7 @@ public final class PixelmonSpriteItem {
         private boolean hasPokeball;
         private boolean hasEV;
         private boolean hasIV;
+        private boolean hasMoveset;
         private boolean isTrainer;
 
         public Build hasNickname() { this.hasNickname = true; return this; }
@@ -399,6 +400,7 @@ public final class PixelmonSpriteItem {
         public Build hasPokeball() { this.hasPokeball = true; return this; }
         public Build hasEV()       { this.hasEV = true; return this; }
         public Build hasIV()       { this.hasIV = true; return this; }
+        public Build hasMoveset()  { this.hasMoveset = true; return this; }
         public Build isTrainer()   { this.isTrainer = true; return this; }
         public Build natures(Nature... natures) {
             this.natures = natures;
