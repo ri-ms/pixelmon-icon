@@ -9,6 +9,7 @@ import com.pixelmonmod.pixelmon.api.pokemon.stats.IVStore;
 import com.pixelmonmod.pixelmon.api.util.ITranslatable;
 import com.pixelmonmod.pixelmon.api.util.helpers.SpriteItemHelper;
 import com.pixelmonmod.pixelmon.battles.attacks.Attack;
+import com.pixelmonmod.pixelmon.enums.heldItems.EnumHeldItems;
 import io.papermc.paper.adventure.PaperAdventure;
 import lombok.Builder;
 import lombok.NonNull;
@@ -364,9 +365,12 @@ public final class PixelmonSpriteItem {
 
     private static Component buildDisplayName(Pokemon pokemon, boolean shiny, boolean showNickname) {
         Component baseName = getFullPokemonName(pokemon);
-        Component heldName = MM.deserialize(" @ <held>",
-                Placeholder.component("held", Component.translatable(pokemon.getHeldItemAsItemHeld()
-                        .getTranslationKey())));
+        Component heldName = Component.empty();
+        if (!pokemon.getHeldItem().equals(net.minecraft.world.item.ItemStack.EMPTY)) {
+            heldName = MM.deserialize(" @ <held>",
+                    Placeholder.component("held", Component.translatable(pokemon.getHeldItemAsItemHeld()
+                            .getTranslationKey())));
+        }
         Component name = deserialize(
                 "<green><name><bold><shiny></bold><held></green><yellow></yellow>",
                 Placeholder.component("name", baseName),
