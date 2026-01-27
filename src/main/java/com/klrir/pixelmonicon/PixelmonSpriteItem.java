@@ -6,7 +6,7 @@ import com.pixelmonmod.pixelmon.api.pokemon.ability.Ability;
 import com.pixelmonmod.pixelmon.api.pokemon.item.pokeball.PokeBall;
 import com.pixelmonmod.pixelmon.api.pokemon.stats.BattleStatsType;
 import com.pixelmonmod.pixelmon.api.pokemon.stats.IVStore;
-import com.pixelmonmod.pixelmon.api.pokemon.stats.Moveset;
+import com.pixelmonmod.pixelmon.api.util.ITranslatable;
 import com.pixelmonmod.pixelmon.api.util.helpers.SpriteItemHelper;
 import com.pixelmonmod.pixelmon.battles.attacks.Attack;
 import io.papermc.paper.adventure.PaperAdventure;
@@ -40,7 +40,7 @@ public final class PixelmonSpriteItem {
             BattleStatsType.HP, NamedTextColor.RED,
             BattleStatsType.ATTACK, NamedTextColor.GOLD,
             BattleStatsType.DEFENSE, NamedTextColor.YELLOW,
-            BattleStatsType.SPECIAL_ATTACK, NamedTextColor.DARK_BLUE,
+            BattleStatsType.SPECIAL_ATTACK, NamedTextColor.BLUE,
             BattleStatsType.SPECIAL_DEFENSE, NamedTextColor.GREEN,
             BattleStatsType.SPEED, NamedTextColor.LIGHT_PURPLE
     );
@@ -253,7 +253,7 @@ public final class PixelmonSpriteItem {
             Ability[] chunk = Arrays.copyOfRange(abilities, i, end);
 
             String content = Arrays.stream(chunk)
-                    .map(Ability::getName)
+                    .map(ability -> Component.translatable(ability.getTranslationKey()).fallback())
                     .collect(Collectors.joining(JOIN));
 
             final String format = getFormatted(abilities.length, i, end);
@@ -364,10 +364,13 @@ public final class PixelmonSpriteItem {
 
     private static Component buildDisplayName(Pokemon pokemon, boolean shiny, boolean showNickname) {
         Component baseName = getFullPokemonName(pokemon);
-
+        Component heldName = MM.deserialize(" @ <held>",
+                Placeholder.component("held", Component.translatable(pokemon.getHeldItemAsItemHeld()
+                        .getTranslationKey())));
         Component name = deserialize(
-                "<green>@<name></green><yellow><bold><shiny></bold></yellow>",
+                "<green><name><bold><shiny></bold><held></green><yellow></yellow>",
                 Placeholder.component("name", baseName),
+                Placeholder.component("held", heldName),
                 Placeholder.parsed("shiny", shiny ? "✨" : "")
         );
 
