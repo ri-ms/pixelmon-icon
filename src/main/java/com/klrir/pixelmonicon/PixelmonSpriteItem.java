@@ -14,16 +14,20 @@ import io.papermc.paper.adventure.PaperAdventure;
 import lombok.Builder;
 import lombok.NonNull;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nullable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -241,7 +245,6 @@ public final class PixelmonSpriteItem {
 
     private static List<Component> buildAbilityLine(Ability... abilities) {
         List<Component> lines = new ArrayList<>();
-        final String JOIN = "<dark_gray>,</dark_gray> ";
 
         if (abilities == null || abilities.length == 0) {
             return lines;
@@ -249,25 +252,31 @@ public final class PixelmonSpriteItem {
 
         int wrapAfter = 3;
 
+        Component separator = Component.text(", ")
+                .color(NamedTextColor.DARK_GRAY);
+
         for (int i = 0; i < abilities.length; i += wrapAfter) {
             int end = Math.min(i + wrapAfter, abilities.length);
             Ability[] chunk = Arrays.copyOfRange(abilities, i, end);
-
-            String content = Arrays.stream(chunk)
-                    .map(ability -> Component.translatable(ability.getTranslationKey()).fallback())
-                    .collect(Collectors.joining(JOIN));
+            Component content = Component.join(
+                    JoinConfiguration.separator(separator),
+                    Arrays.stream(chunk)
+                            .map(ability -> Component.translatable(ability.getTranslationKey()))
+                            .toList()
+            );
 
             final String format = getFormatted(abilities.length, i, end);
 
             lines.add(deserialize(
                     format,
-                    Placeholder.parsed("name", "Ability"),
-                    Placeholder.parsed("value", content)
+                    Placeholder.component("name", Component.text("Ability")),
+                    Placeholder.component("value", content)
             ));
         }
 
         return lines;
     }
+
 
     private static Component buildOTLine(String OT) {
         return deserialize("<green>OT:</green> <light_purple><ot></light_purple>",
@@ -417,7 +426,9 @@ public final class PixelmonSpriteItem {
     }
 
     private static String formatPercent(int value, int max) {
-        return String.format("%.2f%%", (value * 100.0) / max);
+        double percent = (value * 100.0) / max;
+        DecimalFormat df = new DecimalFormat("0.##");
+        return df.format(percent) + "%";
     }
 
     private static Component joinWithSlash(List<Component> components) {
